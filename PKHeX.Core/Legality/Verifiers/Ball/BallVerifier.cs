@@ -66,7 +66,7 @@ public sealed class BallVerifier : Verifier
         {
             EncounterStatic5Entree => VerifyBallEquals((Ball)pk.Ball, BallUseLegality.DreamWorldBalls),
             EncounterEgg => VerifyBallEgg(data),
-            EncounterInvalid => VerifyBallEquals(data, pk.Ball), // ignore ball, pass whatever
+            EncounterInvalid => VerifyBallEquals(data, (byte)pk.Ball), // ignore ball, pass whatever
             _ => VerifyBallEquals((Ball)pk.Ball, BallUseLegality.GetWildBalls(data.Info.Generation, enc.Version)),
         };
     }
