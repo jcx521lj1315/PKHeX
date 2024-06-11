@@ -12,12 +12,46 @@ public static class PluginLoader
 {
     public static IEnumerable<T> LoadPlugins<T>(string pluginPath, PluginLoadSetting loadSetting) where T : class
     {
-        var dllFileNames = !Directory.Exists(pluginPath)
-            ? [] // Don't immediately return, as we may be loading plugins merged with this .exe
-            : Directory.EnumerateFiles(pluginPath, "*.dll", SearchOption.AllDirectories);
-        var assemblies = GetAssemblies(dllFileNames, loadSetting);
+        var assemblies = new List<Assembly>();
+
+        if (loadSetting.IsMerged())
+        {
+            // Load plugins from the merged assembly
+            assemblies.Add(Assembly.GetExecutingAssembly());
+            assemblies.AddRange(LoadEmbeddedPlugins<T>());
+        }
+        else
+        {
+            // Load plugins from the specified plugin directory
+            if (Directory.Exists(pluginPath))
+            {
+                var dllFileNames = Directory.EnumerateFiles(pluginPath, "*.dll", SearchOption.AllDirectories);
+                assemblies.AddRange(GetAssemblies(dllFileNames, loadSetting));
+            }
+        }
+
+        // Get plugin types and instantiate them
         var pluginTypes = GetPluginsOfType<T>(assemblies);
-        return LoadPlugins<T>(pluginTypes);
+        return LoadPlugins<T>(pluginTypes).ToList(); // Call ToList to force immediate execution
+    }
+
+    private static IEnumerable<Assembly> LoadEmbeddedPlugins<T>()
+    {
+        var executingAssembly = Assembly.GetExecutingAssembly();
+        var resources = executingAssembly.GetManifestResourceNames();
+
+        foreach (var resourceName in resources)
+        {
+            if (resourceName.EndsWith(".dll"))
+            {
+                using var stream = executingAssembly.GetManifestResourceStream(resourceName);
+                if (stream == null) continue;
+
+                var assemblyData = new byte[stream.Length];
+                stream.Read(assemblyData, 0, assemblyData.Length);
+                yield return Assembly.Load(assemblyData);
+            }
+        }
     }
 
     private static IEnumerable<T> LoadPlugins<T>(IEnumerable<Type> pluginTypes) where T : class
