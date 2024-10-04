@@ -33,10 +33,7 @@ public partial class Main : Form
         FormLoadAddEvents();
 #if DEBUG // translation updater -- all controls are added at this point -- call translate now
         if (DevUtil.IsUpdatingTranslations)
-        {
             WinFormsUtil.TranslateInterface(this, CurrentLanguage); // Translate the UI to language.
-            return;
-        }
 #endif
         FormInitializeSecond();
         FormLoadCheckForUpdates();
@@ -230,14 +227,12 @@ public partial class Main : Form
         showChangelog = false;
 
         // Version Check
-        var ver = Program.CurrentVersion;
-        var startup = Settings.Startup;
-        if (startup.ShowChangelogOnUpdate && startup.Version.Length != 0) // already run on system
+        if (Settings.Startup.Version.Length != 0 && Settings.Startup.ShowChangelogOnUpdate) // already run on system
         {
-            bool parsed = Version.TryParse(startup.Version, out var lastrev);
-            showChangelog = parsed && lastrev < ver;
+            bool parsed = Version.TryParse(Settings.Startup.Version, out var lastrev);
+            showChangelog = parsed && lastrev < Program.CurrentVersion;
         }
-        startup.Version = ver.ToString(); // set current version so this doesn't happen until the user updates next time
+        Settings.Startup.Version = Program.CurrentVersion.ToString(); // set current version so this doesn't happen until the user updates next time
 
         // BAK Prompt
         if (!Settings.Backup.BAKPrompt)
@@ -265,12 +260,6 @@ public partial class Main : Form
 
     private void FormLoadPlugins()
     {
-        if (Plugins.Count != 0)
-            return; // already loaded
-#if !MERGED // merged should load dlls from within too, folder is no longer required
-        if (!Directory.Exists(PluginPath))
-            return;
-#endif
         try
         {
             Plugins.AddRange(PluginLoader.LoadPlugins<IPlugin>(PluginPath, Settings.Startup.PluginLoadMethod));
@@ -280,19 +269,14 @@ public partial class Main : Form
             WinFormsUtil.Error(MsgPluginFailLoad, c);
             return;
         }
-
-        var list = Plugins.OrderBy(z => z.Priority).ToList();
-        foreach (var p in list)
+        catch
         {
-            try
-            {
-                p.Initialize(C_SAV, PKME_Tabs, menuStrip1, Program.CurrentVersion);
-            }
-            catch (Exception ex)
-            {
-                WinFormsUtil.Error(MsgPluginFailLoad, ex);
-                Plugins.Remove(p);
-            }
+            return;
+        }
+
+        foreach (var p in Plugins.OrderBy(z => z.Priority))
+        {
+            p.Initialize(C_SAV, PKME_Tabs, menuStrip1, Program.CurrentVersion);
         }
     }
 
@@ -1022,9 +1006,6 @@ public partial class Main : Form
         WinFormsUtil.TranslateInterface(this, lang); // Translate the UI to language.
         LocalizedDescriptionAttribute.Localizer = WinFormsTranslator.GetDictionary(lang);
 
-        SizeCP.ResetSizeLocalizations(lang);
-        PKME_Tabs.SizeCP.TryResetStats();
-
         if (sav is not FakeSaveFile)
         {
             var pk = PKME_Tabs.CurrentPKM.Clone();
@@ -1138,8 +1119,10 @@ public partial class Main : Form
             var dr = WinFormsUtil.Prompt(MessageBoxButtons.YesNo, report, MsgClipboardLegalityExport);
             if (dr != DialogResult.Yes)
                 return;
-            var enc = la.EncounterOriginal.GetTextLines(Settings.Display.ExportLegalityVerboseProperties);
+#if DEBUG
+            var enc = la.EncounterOriginal.GetTextLines();
             report += Environment.NewLine + Environment.NewLine + string.Join(Environment.NewLine, enc);
+#endif
             WinFormsUtil.SetClipboardText(report);
         }
         else if (Settings.Display.IgnoreLegalPopup && la.Valid)
