@@ -28,6 +28,66 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="MainWindow\Plugins\AutoModPlugins.dll" />
+    <None Remove="MainWindow\Plugins\Overworld8.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.FashionEditor.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.RaidImporter.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.RoamerTool.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.SortingPlugin.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.SVivillonPlugin.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.SVProfilePictureViewer.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.TeamViewer.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.Unmaintained.SwShEventEditor.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.Unmaintained.SwShRaidTool.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.Unmaintained.AutoModQRPlugins.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.Unmaintained.BWTool.dll" />
+    <None Remove="MainWindow\Plugins\WangPluginPkm.dll" />
+    <None Remove="MainWindow\Plugins\WangPluginSav.dll" />
+    <None Remove="MainWindow\Plugins\PokeFilename.API.dll" />
+    <None Remove="MainWindow\Plugins\PokeFilename.GUI.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.TMTool.dll" />
+    <None Remove="MainWindow\Plugins\HomeLive.Plugins.dll" />
+    <None Remove="MainWindow\Plugins\TeraFinder.Plugins.dll" />
+    <None Remove="MainWindow\Plugins\TeraFinder.Plugins_v4.2.0.dll" />
+    <None Remove="MainWindow\Plugins\DynamaxAdventureReset.dll" />
+    <None Remove="MainWindow\Plugins\PkHeXEggLockeGenerator.dll" />
+    <None Remove="MainWindow\Plugins\PKHeXPluginExample.dll" />
+    <None Remove="MainWindow\Plugins\WC3Plugin.dll" />
+    <None Remove="MainWindow\Plugins\MissingEventFlagsChecker.dll" />
+    <None Remove="MainWindow\Plugins\EasyBatchMod7.dll" />
+    <None Remove="MainWindow\Plugins\CuteCharmIDGeniePlugin.dll" />
+    <None Remove="MainWindow\Plugins\BerryPlotsForm.dll" />
+    <None Remove="MainWindow\Plugins\GP1Editor.dll" />
+    <None Remove="MainWindow\Plugins\NPCmonEditor.dll" />
+    <None Remove="MainWindow\Plugins\OverworldReader7.0.dll" />
+    <None Remove="MainWindow\Plugins\SV Overworld Viewer.dll" />
+    <None Remove="MainWindow\Plugins\SV_Fixed_Symbol_Viewer.dll" />
+    <None Remove="MainWindow\Plugins\WonderRecordsNX.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MainWindow\Plugins\AutoModPlugins.dll" />
+    <EmbeddedResource Include="MainWindow\Plugins\Overworld8.dll" />
+    <EmbeddedResource Include="MainWindow\Plugins\PokeFilename.GUI.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MainWindow\Plugins\PokeFilename.API.dll" />
+    <EmbeddedResource Include="MainWindow\Plugins\HomeLive.Plugins.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MainWindow\Plugins\TeraFinder.Plugins.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MainWindow\Plugins\PluginPile.dll" />
+    <EmbeddedResource Include="MainWindow\Plugins\PluginPile.Unmaintained.SwShEventEditor.dll" />
+    <EmbeddedResource Include="MainWindow\Plugins\PluginPile.Unmaintained.SwShRaidTool.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PKHeX.Core\PKHeX.Core.csproj" />
     <ProjectReference Include="..\PKHeX.Drawing.Misc\PKHeX.Drawing.Misc.csproj" />
     <ProjectReference Include="..\PKHeX.Drawing.PokeSprite\PKHeX.Drawing.PokeSprite.csproj" />
