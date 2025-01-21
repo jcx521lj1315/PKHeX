@@ -23,7 +23,8 @@ public sealed record EncounterSlot8a(EncounterArea8a Parent, ushort Species, byt
 
     public string Name => $"Wild Encounter ({Version})";
     public string LongName => $"{Name} {Type.ToString().Replace('_', ' ')}";
-    public GameVersion Version => Parent.Version;
+    private const GameVersion Version = GameVersion.PLA;
+    GameVersion IVersion.Version => GameVersion.PLA;
     public ushort Location => Parent.Location;
     public SlotType8a Type => Parent.Type;
 
@@ -60,7 +61,7 @@ public sealed record EncounterSlot8a(EncounterArea8a Parent, ushort Species, byt
         pk.Scale = pk.HeightScalar;
         pk.ResetHeight();
         pk.ResetWeight();
-        SetEncounterMoves(pk, LevelMin);
+        SetEncounterMoves(pk, pk.MetLevel);
         pk.ResetPartyStats();
         return pk;
     }
@@ -75,7 +76,7 @@ public sealed record EncounterSlot8a(EncounterArea8a Parent, ushort Species, byt
             {
                 // Give a random level according to the RNG correlation.
                 var lvl = Overworld8aRNG.GetRandomLevel(slotSeed, LevelMin, LevelMax);
-                if (criteria.IsSpecifiedLevelRange() && !criteria.IsLevelRangeSatisfied(lvl))
+                if (criteria.IsSpecifiedLevelRange() && !criteria.IsSatisfiedLevelRange(lvl))
                     continue;
                 pk.MetLevel = pk.CurrentLevel = lvl;
             }
@@ -154,7 +155,7 @@ public sealed record EncounterSlot8a(EncounterArea8a Parent, ushort Species, byt
             return EncounterMatchRating.PartialMatch;
         if (IsDeferredWurmple(pk))
             return EncounterMatchRating.PartialMatch;
-        if (!MarkRules.IsMarkValidAlpha(pk, IsAlpha))
+        if (!MarkRules.IsMarkValidAlpha(pk, IsAlpha) || (pk is IAlphaReadOnly a && a.IsAlpha != IsAlpha))
             return EncounterMatchRating.DeferredErrors;
         if (FlawlessIVCount is not 0 && pk.FlawlessIVCount < FlawlessIVCount)
             return EncounterMatchRating.DeferredErrors;
@@ -247,7 +248,7 @@ public sealed record EncounterSlot8a(EncounterArea8a Parent, ushort Species, byt
             seed = s;
             return true;
         }
-        seed = default;
+        seed = 0;
         return false;
     }
 }

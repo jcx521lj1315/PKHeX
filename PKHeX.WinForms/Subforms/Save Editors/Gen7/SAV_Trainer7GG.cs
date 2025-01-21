@@ -152,7 +152,7 @@ public partial class SAV_Trainer7GG : Form
         TextBox tb = sender as TextBox ?? TB_OTName;
 
         // Special Character Form
-        var d = new TrashEditor(tb, SAV, SAV.Generation);
+        var d = new TrashEditor(tb, SAV, SAV.Generation, SAV.Context);
         d.ShowDialog();
         tb.Text = d.FinalString;
     }
@@ -207,7 +207,7 @@ public partial class SAV_Trainer7GG : Form
 
         var folder = fbd.SelectedPath;
         foreach (var gpk in gofiles)
-            File.WriteAllBytes(Path.Combine(folder, Util.CleanFileName(gpk.FileName)), gpk.Data.ToArray());
+            File.WriteAllBytes(Path.Combine(folder, Util.CleanFileName(gpk.FileName)), gpk.Data);
         WinFormsUtil.Alert($"Dumped {gofiles.Length} files to {folder}");
     }
 
@@ -266,7 +266,7 @@ public partial class SAV_Trainer7GG : Form
         if (sfd.ShowDialog() != DialogResult.OK)
             return;
 
-        File.WriteAllBytes(sfd.FileName, data.Data.ToArray());
+        File.WriteAllBytes(sfd.FileName, data.Data);
     }
 
     private void B_ImportGoFiles_Click(object sender, EventArgs e)
