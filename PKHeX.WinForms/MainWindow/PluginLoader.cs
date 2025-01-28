@@ -66,7 +66,7 @@ public static class PluginLoader
                 Debug.WriteLine(ex.Message);
                 continue;
             }
-            if (activate != null)
+            if (activate is not null)
                 yield return activate;
         }
     }

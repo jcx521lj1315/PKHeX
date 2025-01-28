@@ -67,7 +67,8 @@ public sealed class NicknameVerifier : Verifier
         // Non-nicknamed strings have already been checked.
         if (ParseSettings.Settings.WordFilter.IsEnabled(pk.Format) && pk.IsNicknamed)
         {
-            if (WordFilter.IsFiltered(nickname, out var badPattern))
+            var mostRecentNicknameContext = pk.Format >= 8 ? pk.Context : enc.Context;
+            if (WordFilter.IsFiltered(nickname, out var badPattern, pk.Context, mostRecentNicknameContext))
                 data.AddLine(GetInvalid($"Word Filter: {badPattern}"));
             if (TrainerNameVerifier.ContainsTooManyNumbers(nickname, data.Info.Generation))
                 data.AddLine(GetInvalid("Word Filter: Too many numbers."));
@@ -164,11 +165,9 @@ public sealed class NicknameVerifier : Verifier
                     return true;
                 }
             }
-            foreach (var language in Language.GetAvailableGameLanguages(pk.Format))
+            if (SpeciesName.TryGetSpeciesAnyLanguage(nickname, out var species, pk.Format))
             {
-                if (!SpeciesName.TryGetSpecies(nickname, language, out var species))
-                    continue;
-                var msg = species == pk.Species && language != pk.Language ? LNickMatchNoOthersFail : LNickMatchLanguageFlag;
+                var msg = species == pk.Species ? LNickMatchLanguageFlag : LNickMatchNoOthersFail;
                 data.AddLine(Get(msg, ParseSettings.Settings.Nickname.NicknamedAnotherSpecies));
                 return true;
             }
@@ -302,6 +301,8 @@ public sealed class NicknameVerifier : Verifier
 
     private static bool IsMatchUpper45(ReadOnlySpan<char> nickname, ReadOnlySpan<char> expect)
     {
+        if (nickname.Length != expect.Length)
+            return false;
         for (int i = 0; i < expect.Length; i++)
         {
             if (nickname[i] != char.ToUpperInvariant(expect[i]))
@@ -312,10 +313,10 @@ public sealed class NicknameVerifier : Verifier
 
     private static void VerifyNicknameEgg(LegalityAnalysis data)
     {
-        var Info = data.Info;
         var pk = data.Entity;
+        var enc = data.Info.EncounterMatch;
 
-        bool flagState = EggStateLegality.IsNicknameFlagSet(Info.EncounterMatch, pk);
+        bool flagState = EggStateLegality.IsNicknameFlagSet(enc, pk);
         if (pk.IsNicknamed != flagState)
             data.AddLine(GetInvalid(flagState ? LNickFlagEggYes : LNickFlagEggNo, CheckIdentifier.Egg));
 
@@ -325,7 +326,7 @@ public sealed class NicknameVerifier : Verifier
 
         if (pk.Format == 2 && !SpeciesName.IsNicknamedAnyLanguage(0, nickname, 2))
             data.AddLine(GetValid(LNickMatchLanguageEgg, CheckIdentifier.Egg));
-        else if (!nickname.SequenceEqual(SpeciesName.GetEggName(pk.Language, Info.Generation)))
+        else if (!nickname.SequenceEqual(SpeciesName.GetEggName(pk.Language, enc.Generation)))
             data.AddLine(GetInvalid(LNickMatchLanguageEggFail, CheckIdentifier.Egg));
         else
             data.AddLine(GetValid(LNickMatchLanguageEgg, CheckIdentifier.Egg));
