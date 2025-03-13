@@ -265,12 +265,7 @@ public partial class Main : Form
 
     private void FormLoadPlugins()
     {
-        if (Plugins.Count != 0)
-            return; // already loaded
-#if !MERGED // merged should load dlls from within too, folder is no longer required
-        if (!Directory.Exists(PluginPath))
-            return;
-#endif
+
         try
         {
             Plugins.AddRange(PluginLoader.LoadPlugins<IPlugin>(PluginPath, Settings.Startup.PluginLoadMethod));
@@ -278,6 +273,10 @@ public partial class Main : Form
         catch (InvalidCastException c)
         {
             WinFormsUtil.Error(MsgPluginFailLoad, c);
+            return;
+        }
+        catch
+        {
             return;
         }
 
