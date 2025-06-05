@@ -19,6 +19,10 @@
     <RootNamespace>PKHeX.WinForms</RootNamespace>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<DefineConstants>MERGED</DefineConstants>
+	</PropertyGroup>
+	
   <PropertyGroup>
     <DebugType>portable</DebugType>
     <EmbedAllSources>true</EmbedAllSources>
@@ -28,6 +32,27 @@
     <PublishTrimmed>false</PublishTrimmed>
     <SelfContained>false</SelfContained>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="MainWindow\Plugins\AutoModPlugins.dll" />
+    <None Remove="MainWindow\Plugins\HomeLive.Plugins.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.dll" />
+    <None Remove="MainWindow\Plugins\TeraFinder.Plugins.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.Unmaintained.SwShEventEditor.dll" />
+    <None Remove="MainWindow\Plugins\PluginPile.Unmaintained.SwShRaidTool.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MainWindow\Plugins\AutoModPlugins.dll" />
+    <EmbeddedResource Include="MainWindow\Plugins\HomeLive.Plugins.dll" />
+    <EmbeddedResource Include="MainWindow\Plugins\TeraFinder.Plugins.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MainWindow\Plugins\PluginPile.dll" />
+    <EmbeddedResource Include="MainWindow\Plugins\PluginPile.Unmaintained.SwShEventEditor.dll" />
+    <EmbeddedResource Include="MainWindow\Plugins\PluginPile.Unmaintained.SwShRaidTool.dll" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PKHeX.Core\PKHeX.Core.csproj" />
